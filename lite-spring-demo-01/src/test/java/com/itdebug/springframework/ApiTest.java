@@ -13,15 +13,15 @@ public class ApiTest {
 
     @Test
     public void test_bean_factory() {
-        String beanName = "userService";
         //1.初始化 BeanFactory
         BeanFactory beanFactory = new BeanFactory();
 
         //2.注入bean: 定义bean的元数据信息
-        BeanDefinition beanDefinition = new BeanDefinition(new UserService());
-        beanFactory.registerBeanDefinition(beanName, beanDefinition);
+        UserService bean = new UserService();
+        BeanDefinition beanDefinition = new BeanDefinition(bean);
+        beanFactory.registerBeanDefinition("userService", beanDefinition);
         //3.获取bean：从工厂类中获取对象
-        UserService userService = (UserService) beanFactory.getBean(beanName);
+        UserService userService = (UserService) beanFactory.getBean("userService");
         userService.getUser();
     }
 }
