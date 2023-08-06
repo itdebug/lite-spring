@@ -1,9 +1,9 @@
-package springframework;
+package com.itdebug.springframework;
 
+import com.itdebug.springframework.bean.UserService;
 import com.itdebug.springframework.entity.BeanDefinition;
 import com.itdebug.springframework.support.DefaultListableBeanFactory;
 import org.junit.Test;
-import springframework.bean.UserService;
 
 /**
  * @创建人 Eric.Lu
@@ -20,11 +20,9 @@ public class ApiTest {
         //2.注册Bean
         BeanDefinition beanDefinition = new BeanDefinition(UserService.class);
         beanFactory.registerBeanDefinition("userService", beanDefinition);
-        //3.第一次获取Bean
-        UserService userService = (UserService) beanFactory.getBean("userService");
-        userService.getUser();
-        //4.第二次获取Bean，且是Singleton类型
-        UserService userService_singleton = (UserService) beanFactory.getBean("userService");
-        userService_singleton.getUser();
+
+        //3.获取Bean
+        UserService userService_singleton = (UserService) beanFactory.getBean("userService", "Eric.Lu");
+        System.out.println(userService_singleton.toString());
     }
 }

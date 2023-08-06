@@ -2,8 +2,8 @@ package com.itdebug.springframework.support;
 
 import com.itdebug.springframework.entity.BeanDefinition;
 import com.itdebug.springframework.exception.SpringBeansException;
+import com.itdebug.springframework.support.instante.CglibSubclassingInstantiationStrategy;
 import com.itdebug.springframework.support.instante.InstantiationStrategy;
-
 import java.lang.reflect.Constructor;
 
 /**
@@ -14,13 +14,13 @@ import java.lang.reflect.Constructor;
  */
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
 
-    private InstantiationStrategy instantiationStrategy = null;
+    private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws SpringBeansException {
-        Object bean;
+        Object bean = null;
         try {
-            bean = beanDefinition.getBeanClass().newInstance();
+            bean = createBeanInstance(beanDefinition, beanName, args);
         } catch (Exception e) {
             throw new SpringBeansException("Instantiation of bean failed", e);
         }
@@ -33,7 +33,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Class<?> beanClass = beanDefinition.getBeanClass();
         Constructor<?>[] declaredConstructors = beanClass.getDeclaredConstructors();
         for(Constructor constructor:declaredConstructors) {
-            if(null != args && constructor.getParameters().length == args.length) {
+            if (null != args && constructor.getParameterTypes().length == args.length) {
                 realConstructor = constructor;
                 break;
             }
