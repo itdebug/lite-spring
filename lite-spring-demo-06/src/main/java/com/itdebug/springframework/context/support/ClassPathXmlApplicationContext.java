@@ -3,6 +3,7 @@ package com.itdebug.springframework.context.support;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
 
 /**
+ * 读取和解析spring.xml文件
  * @创建人 Eric.Lu
  * @创建时间 2023/8/12
  * @地址 https://github.com/itdebug/
