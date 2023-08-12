@@ -7,11 +7,11 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>lite-spring-demo-04</artifactId>
+    <artifactId>lite-spring-demo-06</artifactId>
     <packaging>jar</packaging>
 
-    <name>lite-spring-demo-04</name>
-    <url>https://github.com/itdebug/lite-spring</url>
+    <name>lite-spring-demo-06</name>
+    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
