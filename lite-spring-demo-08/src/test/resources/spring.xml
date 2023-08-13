@@ -3,18 +3,5 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	         http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-    <bean id="teacher" class="com.itdebug.springframework.test.bean.Teacher">
-        <property name="name" value="Dennis"/>
-        <property name="student" ref="student"/>
-    </bean>
-
-    <bean id="student" class="com.itdebug.springframework.test.bean.Student">
-        <property name="name" value="Kevin"/>
-        <property name="age" value="30"/>
-    </bean>
-
-    <bean class="com.itdebug.springframework.test.config.CustomBeanFactoryProcessor"/>
-    <bean class="com.itdebug.springframework.test.config.CustomerBeanPostProcessor"/>
-
+    <bean id="schoolService" class="com.itdebug.springframework.test.service.SchoolService"/>
 </beans>
