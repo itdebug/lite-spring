@@ -12,5 +12,5 @@ import com.itdebug.springframework.io.ResourceLoader;
  * @地址 https://github.com/itdebug/
  * @描述
  */
-public interface ApplicationContext extends ListableBeanFactory, HierarchicalBeanFactory, ResourceLoader {
+public interface ApplicationContext extends ListableBeanFactory, HierarchicalBeanFactory, ResourceLoader, ApplicationEventPublisher {
 }

@@ -13,8 +13,8 @@ import com.itdebug.springframework.beans.factory.config.BeanPostProcessor;
 import com.itdebug.springframework.beans.factory.entity.BeanDefinition;
 import com.itdebug.springframework.beans.factory.entity.BeanReference;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
-import com.itdebug.springframework.beans.factory.support.instante.CglibSubclassingInstantiationStrategy;
 import com.itdebug.springframework.beans.factory.support.instante.InstantiationStrategy;
+import com.itdebug.springframework.beans.factory.support.instante.SimpleInstantiationStrategy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
-    private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
+    private InstantiationStrategy instantiationStrategy = new SimpleInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition,

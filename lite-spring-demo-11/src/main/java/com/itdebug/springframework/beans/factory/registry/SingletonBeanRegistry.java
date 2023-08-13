@@ -9,4 +9,6 @@ package com.itdebug.springframework.beans.factory.registry;
 public interface SingletonBeanRegistry {
 
     Object getSingleton(String name);
+
+    void addSingleton(String beanName, Object singletonObject);
 }
