@@ -4,6 +4,7 @@ import com.itdebug.springframework.beans.factory.BeanFactory;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
 import com.itdebug.springframework.context.ApplicationEvent;
 import com.itdebug.springframework.context.ApplicationListener;
+import com.itdebug.springframework.util.ClassUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -37,8 +38,13 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
      * @return
      */
     protected boolean supportsEvent(ApplicationListener<ApplicationEvent> applicationListener, ApplicationEvent event) {
-        Type type = applicationListener.getClass().getGenericInterfaces()[0];
-        Type actualTypeArgument = ((ParameterizedType) type).getActualTypeArguments()[0];
+
+        Class<? extends ApplicationListener> listenerClass = applicationListener.getClass();
+        // 按照 CglibSubclassingInstantiationStrategy、SimpleInstantiationStrategy 不同的实例化类型，需要判断后获取目标 class
+        Class<?> targetClass = ClassUtils.isCglibProxyClass(listenerClass) ? listenerClass.getSuperclass() : listenerClass;
+        Type genericInterface = targetClass.getGenericInterfaces()[0];
+
+        Type actualTypeArgument = ((ParameterizedType) genericInterface).getActualTypeArguments()[0];
         String className = actualTypeArgument.getTypeName();
         Class<?> eventClassName;
         try {
