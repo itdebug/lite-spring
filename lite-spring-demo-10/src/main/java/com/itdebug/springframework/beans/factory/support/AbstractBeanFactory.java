@@ -1,5 +1,6 @@
 package com.itdebug.springframework.beans.factory.support;
 
+import com.itdebug.springframework.beans.factory.FactoryBean;
 import com.itdebug.springframework.beans.factory.config.BeanPostProcessor;
 import com.itdebug.springframework.beans.factory.config.ConfigurableBeanFactory;
 import com.itdebug.springframework.beans.factory.entity.BeanDefinition;
@@ -8,6 +9,8 @@ import com.itdebug.springframework.beans.factory.registry.DefaultSingletonBeanRe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @创建人 Eric.Lu
@@ -17,11 +20,39 @@ import java.util.List;
  */
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 
+    /**
+     * Cache of singleton objects created by FactoryBeans: FactoryBean name to object.
+     */
+    private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>(16);
+
     private final List<BeanPostProcessor> beanPostProcessorList = new ArrayList<>();
 
     @Override
     public Object getBean(String beanName) {
         return doGetBean(beanName, null);
+    }
+
+    protected Object getObjectForBeanInstance(Object beanInstance, String beanName) {
+        Object object = beanInstance;
+        if (beanInstance instanceof FactoryBean) {
+            FactoryBean factoryBean = (FactoryBean) beanInstance;
+            try {
+                if (factoryBean.isSingleton()) {
+                    //singleton作用域bean，从缓存中获取
+                    object = this.factoryBeanObjectCache.get(beanName);
+                    if (object == null) {
+                        object = factoryBean.getObject();
+                        this.factoryBeanObjectCache.put(beanName, object);
+                    } else {
+                        //prototype作用域bean，新创建bean
+                        object = factoryBean.getObject();
+                    }
+                }
+            } catch (Exception e) {
+                throw new SpringBeansException("FactoryBean threw exception on object[" + beanName + "] creation", e);
+            }
+        }
+        return object;
     }
 
     @Override
@@ -37,17 +68,17 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     protected <T> T doGetBean(final String beanName, final Object[] args) {
         Object bean = getSingleton(beanName);
         if (bean != null) {
-            System.out.println("无需创建，从缓存获取");
-            return (T) bean;
+            //如果是FactoryBean，从FactoryBean#getObject中创建bean
+            return (T) getObjectForBeanInstance(bean, beanName);
         }
         BeanDefinition definition = getBeanDefinition(beanName);
-        return (T) createBean(beanName, definition, args);
+        bean = createBean(beanName, definition, args);
+        return (T) getObjectForBeanInstance(bean, beanName);
     }
 
     protected abstract BeanDefinition getBeanDefinition(String beanName) throws SpringBeansException;
 
-    protected abstract Object createBean(String beanName, BeanDefinition beanDefinition,
-                                         Object[] args) throws SpringBeansException;
+    protected abstract Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws SpringBeansException;
 
 
     @Override
