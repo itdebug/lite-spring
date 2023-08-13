@@ -7,10 +7,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>lite-spring-demo-06</artifactId>
+    <artifactId>lite-spring-demo-07</artifactId>
     <packaging>jar</packaging>
 
-    <name>lite-spring-demo-06</name>
+    <name>lite-spring-demo-07</name>
     <url>https://github.com/itdebug/lite-spring</url>
 
     <properties>
