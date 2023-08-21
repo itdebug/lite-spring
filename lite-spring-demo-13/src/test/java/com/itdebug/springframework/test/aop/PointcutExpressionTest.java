@@ -21,8 +21,12 @@ public class PointcutExpressionTest {
         AspectJExpressionPointCut pointcut = new AspectJExpressionPointCut("execution(* com.itdebug.springframework.test.service.SchoolService.*(..))");
         Class<SchoolService> clazz = SchoolService.class;
         Method method = clazz.getDeclaredMethod("getSchool");
+        Method getBeanFactory = clazz.getDeclaredMethod("getBeanFactory");
+        Method getApplicationContext = clazz.getDeclaredMethod("getApplicationContext");
 
         assertThat(pointcut.matches(clazz)).isTrue();
         assertThat(pointcut.matches(method, clazz)).isTrue();
+        assertThat(pointcut.matches(getBeanFactory, clazz)).isTrue();
+        assertThat(pointcut.matches(getApplicationContext, clazz)).isTrue();
     }
 }

@@ -1,6 +1,8 @@
-package com.itdebug.springframework.aop.framework;
+package com.itdebug.springframework.aop.framework.cglib;
 
 import com.itdebug.springframework.aop.AdvisedSupport;
+import com.itdebug.springframework.aop.framework.AopProxy;
+import com.itdebug.springframework.aop.framework.jdk.ReflectiveMethodInvocation;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -44,6 +46,7 @@ public class CglibAopProxy implements AopProxy {
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
             CglibMethodInvocation methodInvocation = new CglibMethodInvocation(advised.getTargetSource().getTarget(), method, objects, methodProxy);
+            //方法正则是否匹配
             if (advised.getMethodMatcher().matches(method, advised.getTargetSource().getTarget().getClass())) {
                 //代理方法
                 return advised.getMethodInterceptor().invoke(methodInvocation);
