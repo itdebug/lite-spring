@@ -10,6 +10,10 @@ import net.sf.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 
 /**
+ * 【基于类】
+ * 与基于JDK的动态代理在运行期间为接口生成对象的代理对象不同，
+ * 基于CGLIB的动态代理能在运行期间动态构建字节码的class文件，为类生成子类，
+ * 因此被代理类不需要继承自任何接口。
  * @创建人 Eric.Lu
  * @创建时间 2023/8/16
  * @地址 https://github.com/itdebug/

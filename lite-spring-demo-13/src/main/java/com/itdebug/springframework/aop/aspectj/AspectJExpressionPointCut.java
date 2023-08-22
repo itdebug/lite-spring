@@ -12,6 +12,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Pointcut是JoinPoint的表述方式，能捕获JoinPoint。
+ * 最常用的切点表达式是AspectJ的切点表达式。需要匹配类，定义ClassFilter接口；匹配方法，定义MethodMatcher接口。
+ * PointCut需要同时匹配类和方法，包含ClassFilter和MethodMatcher，
+ * AspectJExpressionPointcut是支持AspectJ切点表达式的PointCut实现，简单实现仅支持execution函数。
  * @创建人 Eric.Lu
  * @创建时间 2023/8/15
  * @地址 https://github.com/itdebug/

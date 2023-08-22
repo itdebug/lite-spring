@@ -9,7 +9,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * 基于接口
+ * 【基于接口】
+ * JdkDynamicAopProxy的基于JDK动态代理的具体实现
  * @创建人 Eric.Lu
  * @创建时间 2023/8/16
  * @地址 https://github.com/itdebug/
