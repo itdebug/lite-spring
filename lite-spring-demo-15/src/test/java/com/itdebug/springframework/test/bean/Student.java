@@ -1,11 +1,14 @@
 package com.itdebug.springframework.test.bean;
 
+import com.itdebug.springframework.steretype.Component;
+
 /**
  * @创建人 Eric.Lu
  * @创建时间 2023/8/12
  * @地址 https://github.com/itdebug/
  * @描述
  */
+@Component
 public class Student {
 
     private String name;
