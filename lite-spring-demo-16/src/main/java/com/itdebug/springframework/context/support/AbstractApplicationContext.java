@@ -1,7 +1,6 @@
 package com.itdebug.springframework.context.support;
 
 import com.itdebug.springframework.beans.factory.ConfigurableListableBeanFactory;
-import com.itdebug.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import com.itdebug.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import com.itdebug.springframework.beans.factory.config.BeanPostProcessor;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
@@ -117,6 +116,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     @Override
     public <T> T getBean(String name, Class<T> requiredType) throws SpringBeansException {
         return getBeanFactory().getBean(name, requiredType);
+    }
+
+    @Override
+    public <T> T getBean(Class<T> requiredType) throws SpringBeansException {
+        return getBeanFactory().getBean(requiredType);
     }
 
     @Override

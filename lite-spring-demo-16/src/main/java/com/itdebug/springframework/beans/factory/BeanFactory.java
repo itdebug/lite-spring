@@ -39,4 +39,6 @@ public interface BeanFactory {
      * @throws SpringBeansException
      */
     <T> T getBean(String name, Class<T> requiredType) throws SpringBeansException;
+
+    <T> T getBean(Class<T> requiredType) throws SpringBeansException;
 }

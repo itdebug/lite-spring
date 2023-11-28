@@ -5,9 +5,7 @@ import com.itdebug.springframework.beans.factory.entity.BeanDefinition;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
 import com.itdebug.springframework.beans.factory.registry.BeanDefinitionRegistry;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @创建人 Eric.Lu
@@ -43,6 +41,22 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             }
         });
         return result;
+    }
+
+    public <T> T getBean(Class<T> requiredType) throws SpringBeansException {
+        List<String> beanNames = new ArrayList<>();
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
+            Class beanClass = entry.getValue().getBeanClass();
+            if (requiredType.isAssignableFrom(beanClass)) {
+                beanNames.add(entry.getKey());
+            }
+        }
+        if (beanNames.size() == 1) {
+            return getBean(beanNames.get(0), requiredType);
+        }
+
+        throw new SpringBeansException(requiredType + "expected single bean but found " +
+                beanNames.size() + ": " + beanNames);
     }
 
     @Override
