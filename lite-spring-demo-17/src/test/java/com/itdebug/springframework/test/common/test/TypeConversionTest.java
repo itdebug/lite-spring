@@ -1,11 +1,15 @@
 package com.itdebug.springframework.test.common.test;
 
+import com.itdebug.springframework.context.support.ClassPathXmlApplicationContext;
 import com.itdebug.springframework.core.convert.converter.Converter;
 import com.itdebug.springframework.core.convert.support.GenericConversionService;
 import com.itdebug.springframework.core.convert.support.StringToNumberConverterFactory;
+import com.itdebug.springframework.test.bean.Car;
 import com.itdebug.springframework.test.common.StringToBooleanConverter;
 import com.itdebug.springframework.test.common.StringToIntegerConverter;
 import org.junit.Test;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,18 +57,28 @@ public class TypeConversionTest {
 		GenericConversionService conversionService = new GenericConversionService();
 		conversionService.addConverter(new StringToIntegerConverter());
 
+		conversionService.addConverterFactory(new StringToNumberConverterFactory());
+		assertThat(conversionService.canConvert(String.class, Long.class)).isTrue();
+
+		Long longNum = conversionService.convert("8888", Long.class);
+		assertThat(longNum).isEqualTo(8888L);
+
 		Integer intNum = conversionService.convert("8888", Integer.class);
 		assertThat(conversionService.canConvert(String.class, Integer.class)).isTrue();
 		assertThat(intNum).isEqualTo(8888);
-
-		conversionService.addConverterFactory(new StringToNumberConverterFactory());
-		assertThat(conversionService.canConvert(String.class, Long.class)).isTrue();
-		Long longNum = conversionService.convert("8888", Long.class);
-		assertThat(longNum).isEqualTo(8888L);
 
 		conversionService.addConverter(new StringToBooleanConverter());
 		assertThat(conversionService.canConvert(String.class, Boolean.class)).isTrue();
 		Boolean flag = conversionService.convert("true", Boolean.class);
 		assertThat(flag).isTrue();
+	}
+
+	@Test
+	public void testConversionService() throws Exception {
+		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:type-conversion-second-part.xml");
+
+		Car car = applicationContext.getBean("car", Car.class);
+		assertThat(car.getPrice()).isEqualTo(1000000);
+		assertThat(car.getProduceDate()).isEqualTo(LocalDate.of(2021, 1, 1));
 	}
 }

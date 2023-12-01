@@ -19,12 +19,26 @@ public class GenericConversionService implements ConversionService, ConverterReg
 
 	private Map<GenericConverter.ConvertiblePair, GenericConverter> converters = new HashMap<>();
 
+	/**
+	 * 判断
+	 *
+	 * @param sourceType
+	 * @param targetType
+	 * @return
+	 */
 	@Override
 	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
 		GenericConverter converter = getConverter(sourceType, targetType);
 		return converter != null;
 	}
 
+	/**
+	 * 执行
+	 * @param source
+	 * @param targetType
+	 * @return
+	 * @param <T>
+	 */
 	@Override
 	public <T> T convert(Object source, Class<T> targetType) {
 		Class<?> sourceType = source.getClass();
@@ -32,6 +46,10 @@ public class GenericConversionService implements ConversionService, ConverterReg
 		return (T) converter.convert(source, sourceType, targetType);
 	}
 
+	/**
+	 * 添加
+	 * @param converter
+	 */
 	@Override
 	public void addConverter(Converter<?, ?> converter) {
 		GenericConverter.ConvertiblePair typeInfo = getRequiredTypeInfo(converter);
@@ -41,6 +59,10 @@ public class GenericConversionService implements ConversionService, ConverterReg
 		}
 	}
 
+	/**
+	 * 添加
+	 * @param converterFactory
+	 */
 	@Override
 	public void addConverterFactory(ConverterFactory<?, ?> converterFactory) {
 		GenericConverter.ConvertiblePair typeInfo = getRequiredTypeInfo(converterFactory);
@@ -50,6 +72,10 @@ public class GenericConversionService implements ConversionService, ConverterReg
 		}
 	}
 
+	/**
+	 * 添加
+	 * @param converter
+	 */
 	@Override
 	public void addConverter(GenericConverter converter) {
 		for (GenericConverter.ConvertiblePair convertibleType : converter.getConvertibleTypes()) {

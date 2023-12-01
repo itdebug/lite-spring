@@ -41,4 +41,6 @@ public interface BeanFactory {
 	<T> T getBean(String name, Class<T> requiredType) throws SpringBeansException;
 
 	<T> T getBean(Class<T> requiredType) throws SpringBeansException;
+
+	boolean containsBean(String name);
 }

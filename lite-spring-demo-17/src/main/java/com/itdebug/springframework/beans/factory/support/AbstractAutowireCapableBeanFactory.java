@@ -3,6 +3,7 @@ package com.itdebug.springframework.beans.factory.support;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.TypeUtil;
 import com.itdebug.springframework.beans.PropertyValue;
 import com.itdebug.springframework.beans.PropertyValues;
 import com.itdebug.springframework.beans.factory.BeanFactoryAware;
@@ -16,6 +17,7 @@ import com.itdebug.springframework.beans.factory.entity.BeanReference;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
 import com.itdebug.springframework.beans.factory.support.instante.InstantiationStrategy;
 import com.itdebug.springframework.beans.factory.support.instante.SimpleInstantiationStrategy;
+import com.itdebug.springframework.core.convert.ConversionService;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -175,6 +177,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				if (value instanceof BeanReference) {
 					BeanReference beanReference = (BeanReference) value;
 					value = getBean(beanReference.getBeanName());
+				} else {
+					//类型转换
+					Class<?> sourceType = value.getClass();
+					Class<?> targetType = (Class<?>) TypeUtil.getFieldType(bean.getClass(), name);
+					ConversionService conversionService = getConversionService();
+					if (conversionService != null) {
+						if (conversionService.canConvert(sourceType, targetType)) {
+							value = conversionService.convert(value, targetType);
+						}
+					}
 				}
 				// 属性填充
 				BeanUtil.setFieldValue(bean, name, value);

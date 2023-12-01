@@ -1,6 +1,7 @@
 package com.itdebug.springframework.beans.factory.config;
 
 import com.itdebug.springframework.beans.factory.registry.SingletonBeanRegistry;
+import com.itdebug.springframework.core.convert.ConversionService;
 import com.itdebug.springframework.util.StringValueResolver;
 
 /**
@@ -26,4 +27,8 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	void addEmbeddedValueResolver(StringValueResolver valueResolver);
 
 	String resolveEmbeddedValue(String value);
+
+	void setConversionService(ConversionService conversionService);
+
+	ConversionService getConversionService();
 }
