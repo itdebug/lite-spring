@@ -4,27 +4,30 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="b" class="org.springframework.test.bean.B">
-        <property name="a" ref="a"/>
-    </bean>
+
 
     <!-- a被代理 -->
-    <bean id="a" class="org.springframework.test.bean.A">
+    <bean id="a" class="com.itdebug.springframework.test.bean.circle.A">
         <property name="b" ref="b"/>
     </bean>
 
-    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+    <bean id="b" class="com.itdebug.springframework.test.bean.circle.B">
+        <property name="a" ref="a"/>
+    </bean>
 
-    <bean id="pointcutAdvisor" class="org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
-        <property name="expression" value="execution(* org.springframework.test.bean.A.func(..))"/>
+    <bean class="com.itdebug.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <bean id="pointcutAdvisor" class="com.itdebug.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
+        <property name="expression" value="execution(* com.itdebug.springframework.test.bean.circle.A.func(..))"/>
         <property name="advice" ref="methodInterceptor"/>
     </bean>
 
 
-    <bean id="methodInterceptor" class="org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+    <bean id="methodInterceptor"
+          class="com.itdebug.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor">
         <property name="advice" ref="beforeAdvice"/>
     </bean>
 
-    <bean id="beforeAdvice" class="org.springframework.test.common.ABeforeAdvice"/>
+    <bean id="beforeAdvice" class="com.itdebug.springframework.test.common.ABeforeAdvice"/>
 
 </beans>

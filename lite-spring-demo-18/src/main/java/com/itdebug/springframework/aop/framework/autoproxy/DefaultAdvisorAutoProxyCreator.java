@@ -1,6 +1,5 @@
 package com.itdebug.springframework.aop.framework.autoproxy;
 
-import cn.hutool.core.bean.BeanException;
 import com.itdebug.springframework.aop.AdvisedSupport;
 import com.itdebug.springframework.aop.ClassFilter;
 import com.itdebug.springframework.aop.PointCut;
@@ -12,13 +11,14 @@ import com.itdebug.springframework.beans.PropertyValues;
 import com.itdebug.springframework.beans.factory.BeanFactory;
 import com.itdebug.springframework.beans.factory.BeanFactoryAware;
 import com.itdebug.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
-import com.itdebug.springframework.beans.factory.entity.BeanDefinition;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
 import com.itdebug.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @创建人 Eric.Lu
@@ -30,40 +30,41 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
 	private DefaultListableBeanFactory beanFactory;
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws SpringBeansException {
-		this.beanFactory = (DefaultListableBeanFactory) beanFactory;
-	}
-
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws SpringBeansException {
-		return bean;
-	}
+	private Set<Object> earlyProxyReferences = new HashSet<>();
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws SpringBeansException {
+		if (!earlyProxyReferences.contains(beanName)) {
+			return wrapIfNecessary(bean, beanName);
+		}
+
 		return bean;
 	}
 
 	@Override
-	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws SpringBeansException {
+	public Object getEarlyBeanReference(Object bean, String beanName) throws SpringBeansException {
+		earlyProxyReferences.add(beanName);
+		return wrapIfNecessary(bean, beanName);
+	}
+
+	protected Object wrapIfNecessary(Object bean, String beanName) {
 		//避免死循环
-		if (isInfrastructureClass(beanClass)) {
-			return null;
+		if (isInfrastructureClass(bean.getClass())) {
+			return bean;
 		}
 
 		Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
 		try {
 			for (AspectJExpressionPointcutAdvisor advisor : advisors) {
 				ClassFilter classFilter = advisor.getPointcut().getClassFilter();
-				if (classFilter.matches(beanClass)) {
+				if (classFilter.matches(bean.getClass())) {
 					AdvisedSupport advisedSupport = new AdvisedSupport();
-					BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-					Object bean = beanFactory.getInstantiationStrategy().instantiate(beanDefinition, beanName, null, null);
 					TargetSource targetSource = new TargetSource(bean);
+
 					advisedSupport.setTargetSource(targetSource);
 					advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
 					advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
+
 					//返回代理对象
 					return new ProxyFactory(advisedSupport).getProxy();
 				}
@@ -71,7 +72,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 		} catch (Exception ex) {
 			throw new SpringBeansException("Error create proxy bean for: " + beanName, ex);
 		}
-		return null;
+		return bean;
 	}
 
 	private boolean isInfrastructureClass(Class<?> beanClass) {
@@ -81,12 +82,27 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 	}
 
 	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws SpringBeansException {
+		this.beanFactory = (DefaultListableBeanFactory) beanFactory;
+	}
+
+	@Override
+	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws SpringBeansException {
+		return null;
+	}
+
+	@Override
 	public boolean postProcessAfterInstantiation(Object bean, String beanName) throws SpringBeansException {
 		return true;
 	}
 
 	@Override
-	public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeanException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws SpringBeansException {
+		return bean;
+	}
+
+	@Override
+	public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws SpringBeansException {
 		return pvs;
 	}
 }

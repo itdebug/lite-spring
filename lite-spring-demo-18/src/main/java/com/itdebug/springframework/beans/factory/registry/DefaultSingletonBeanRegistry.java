@@ -1,11 +1,12 @@
 package com.itdebug.springframework.beans.factory.registry;
 
 import com.itdebug.springframework.beans.factory.DisposableBean;
+import com.itdebug.springframework.beans.factory.ObjectFactory;
 import com.itdebug.springframework.beans.factory.exception.SpringBeansException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @创建人 Eric.Lu
@@ -15,23 +16,44 @@ import java.util.Map;
  */
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
-	private final Map<String, Object> singletonObjects = new HashMap<>();
+	//一级缓存
+	private Map<String, Object> singletonObjects = new HashMap<>();
 
-	protected Map<String, Object> earlySingletonObjects = new HashMap<>();
+	//二级缓存
+	private Map<String, Object> earlySingletonObjects = new HashMap<>();
+
+	//三级缓存
+	private Map<String, ObjectFactory<?>> singletonFactories = new HashMap<String, ObjectFactory<?>>();
 
 	private final Map<String, DisposableBean> disposableBeans = new HashMap<>();
 
 	@Override
 	public Object getSingleton(String beanName) {
-		Object bean = singletonObjects.get(beanName);
-		if (bean == null) {
-			bean = earlySingletonObjects.get(beanName);
+		Object singletonObject = singletonObjects.get(beanName);
+		if (singletonObject == null) {
+			singletonObject = earlySingletonObjects.get(beanName);
+			if (singletonObject == null) {
+				ObjectFactory<?> singletonFactory = singletonFactories.get(beanName);
+				if (singletonFactory != null) {
+					singletonObject = singletonFactory.getObject();
+					//从三级缓存放进二级缓存
+					earlySingletonObjects.put(beanName, singletonObject);
+					singletonFactories.remove(beanName);
+				}
+			}
 		}
-		return bean;
+		return singletonObject;
 	}
 
+	@Override
 	public void addSingleton(String beanName, Object singletonObject) {
 		singletonObjects.put(beanName, singletonObject);
+		earlySingletonObjects.remove(beanName);
+		singletonFactories.remove(beanName);
+	}
+
+	protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {
+		singletonFactories.put(beanName, singletonFactory);
 	}
 
 	public void registerDisposableBean(String beanName, DisposableBean bean) {
@@ -39,7 +61,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 	}
 
 	public void destroySingletons() {
-		ArrayList<String> beanNames = new ArrayList<>(disposableBeans.keySet());
+		Set<String> beanNames = disposableBeans.keySet();
 		for (String beanName : beanNames) {
 			DisposableBean disposableBean = disposableBeans.remove(beanName);
 			try {
